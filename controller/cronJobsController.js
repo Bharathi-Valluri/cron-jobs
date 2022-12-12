@@ -16,26 +16,26 @@ const cronJobsDataInsertion = async (req, res) => {
     })
   }
 }
-const updateCronJobsData = async (req, res) => {
-  try {
-    const resp = await cronJobs.update(req.body, {
-      where: {
-        id: req.params.id
-      }
-    })
-    console.log(resp)
-    res.status(202).json({
-      response: resp,
-      message: 'success'
-    })
-  } catch (error) {
-    console.log(error.message)
-    res.status(404).json({
-      response: null,
-      message: 'Failed!....'
-    })
-  }
-}
+// const updateCronJobsData = async (req, res) => {
+//   try {
+//     const resp = await cronJobs.update(req.body, {
+//       where: {
+//         id: req.params.id
+//       }
+//     })
+//     console.log(resp)
+//     res.status(202).json({
+//       response: resp,
+//       message: 'success'
+//     })
+//   } catch (error) {
+//     console.log(error.message)
+//     res.status(404).json({
+//       response: null,
+//       message: 'Failed!....'
+//     })
+//   }
+// }
 const deleteCornJobsData = async (req, res) => {
   let ExpiryDate = '2022-12-12'
   try {
@@ -63,6 +63,5 @@ const deleteCornJobsData = async (req, res) => {
 
 module.exports = {
   cronJobsDataInsertion,
-  updateCronJobsData,
   deleteCornJobsData
 }
