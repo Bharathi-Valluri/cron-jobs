@@ -18,45 +18,31 @@ const cronJobsDataInsertion = async (req, res) => {
     })
   }
 }
+function padTo2Digits (num) {
+  return num.toString().padStart(2, '0')
+}
+function formatDate (date) {
+  return [
+    date.getFullYear(),
+    padTo2Digits(date.getMonth() + 1),
+    padTo2Digits(date.getDate())
+  ].join('-')
+}
 const deleteCornJobsData = async (req, res) => {
   try {
-    const resp = await cronJobs.findAll({
-      attributes: {
-        exclude: ['id', 'UserName', 'EmailId', 'ValidityState']
+    date.setHours(0, 0, 0, 0)
+    console.log(formatDate(new Date()))
+    const resp = await cronJobs.destroy({
+      where: {
+        ExpiryDate: formatDate(new Date())
       }
     })
-    for (let index = 0; index < resp.length; index++) {
-      date.setHours(0, 0, 0, 0)
-      function padTo2Digits (num) {
-        return num.toString().padStart(2, '0')
-      }
-      function formatDate (date) {
-        return [
-          date.getFullYear(),
-          padTo2Digits(date.getMonth() + 1),
-          padTo2Digits(date.getDate())
-        ].join('-')
-      }
-
-      console.log(formatDate(new Date()))
-      if (resp[index].ExpiryDate === formatDate(new Date())) {
-        result = await cronJobs.destroy({
-          where: {
-            ExpiryDate: resp[index].ExpiryDate
-          }
-        })
-        console.log('deleted')
-      }
-      console.log(resp[index].ExpiryDate)
-    }
-    res.status(201).json({
-      message: 'success'
-    })
+    console.log('deleted')
+    console.log('---------------------')
+    console.log('running a task every 30 seconds')
+    console.log(resp)
   } catch (error) {
     console.log(error)
-    res.status(401).json({
-      message: 'failed'
-    })
   }
 }
 

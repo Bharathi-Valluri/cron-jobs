@@ -4,6 +4,7 @@ const sequelize = require('./db')
 const router = require('./router/router')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const { deleteCornJobsData } = require('./controller/cronJobsController')
 require('dotenv').config()
 const app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -15,10 +16,14 @@ async function run () {
   try {
     await sequelize.authenticate()
     console.log('connected to the database')
-    cron.schedule('*/15 * * * * *', function () {
-      console.log('---------------------')
-      console.log('running a task every 15 seconds')
-    })
+    cron.schedule('*/30 * * * * *', deleteCornJobsData)
+    console.log('---------------------')
+    console.log('running a task every 30 seconds')
+    deleteCornJobsData()
+    cron.schedule('*/60 * * * * *', deleteCornJobsData)
+    console.log('---------------------')
+    console.log('running a task every 60 seconds')
+    deleteCornJobsData()
     // cron.schedule(
     //   '0 1 * * *',
     //   () => {
