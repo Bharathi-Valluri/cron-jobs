@@ -1,6 +1,8 @@
 const cronJobs = require('../models/userDetails')
 const cron = require('node-cron')
+const date = new Date()
 const sequelize = require('../db')
+const Op = require('sequelize').Op
 const cronJobsDataInsertion = async (req, res) => {
   try {
     const resp = await cronJobs.bulkCreate(req.body)
@@ -16,47 +18,44 @@ const cronJobsDataInsertion = async (req, res) => {
     })
   }
 }
-// const updateCronJobsData = async (req, res) => {
-//   try {
-//     const resp = await cronJobs.update(req.body, {
-//       where: {
-//         id: req.params.id
-//       }
-//     })
-//     console.log(resp)
-//     res.status(202).json({
-//       response: resp,
-//       message: 'success'
-//     })
-//   } catch (error) {
-//     console.log(error.message)
-//     res.status(404).json({
-//       response: null,
-//       message: 'Failed!....'
-//     })
-//   }
-// }
 const deleteCornJobsData = async (req, res) => {
-  let ExpiryDate = '2022-12-12'
   try {
-    if (ExpiryDate == Date.now()) {
-      const resp = await cronJobs.destroy({
-        where: {
-          ExpiryDate: req.body.ExpiryDate
-        }
-      })
-      console.log(resp)
-      console.log('User expired')
-    } else {
-      console.log('valid user')
+    const resp = await cronJobs.findAll({
+      attributes: {
+        exclude: ['id', 'UserName', 'EmailId', 'ValidityState']
+      }
+    })
+    for (let index = 0; index < resp.length; index++) {
+      date.setHours(0, 0, 0, 0)
+      function padTo2Digits (num) {
+        return num.toString().padStart(2, '0')
+      }
+      function formatDate (date) {
+        return [
+          date.getFullYear(),
+          padTo2Digits(date.getMonth() + 1),
+          padTo2Digits(date.getDate())
+        ].join('-')
+      }
+
+      console.log(formatDate(new Date()))
+      if (resp[index].ExpiryDate === formatDate(new Date())) {
+        result = await cronJobs.destroy({
+          where: {
+            ExpiryDate: resp[index].ExpiryDate
+          }
+        })
+        console.log('deleted')
+      }
+      console.log(resp[index].ExpiryDate)
     }
     res.status(201).json({
       message: 'success'
     })
-  } catch (err) {
-    res.status(400).json({
-      response: null,
-      message: err.message
+  } catch (error) {
+    console.log(error)
+    res.status(401).json({
+      message: 'failed'
     })
   }
 }
